@@ -1,0 +1,11 @@
+######## Bio::ToolBox::Extra revision history #############
+
+v.1.26 
+	- Set up all extras scripts as a separate distribution 
+	under a GitHub repository.
+	- Export the convert_genome_data_2_gff_data() and 
+	convert_and_write_to_gff_file() methods from file_helper 
+	to Bio::ToolBox::Extra.
+	- Update scripts to use the new module.
+	
+

@@ -4,7 +4,13 @@ package Bio::ToolBox::Extra;
 require Exporter;
 use strict;
 use Carp qw(carp cluck croak confess);
-use parent 'Bio::ToolBox::file_helper';
+use Bio::ToolBox::data_helper qw(
+	verify_data_structure
+	find_column_index
+);
+use Bio::ToolBox::file_helper qw(
+	open_to_write_fh
+);
 
 
 our $VERSION = 1.26;
@@ -16,17 +22,8 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(
 );
 our @EXPORT_OK = qw(
-	open_data_file 
-	load_data_file
-	process_data_line 
-	parse_filename
-	write_data_file 
-	open_to_read_fh
-	open_to_write_fh
 	convert_genome_data_2_gff_data 
 	convert_and_write_to_gff_file
-	write_summary_data
-	check_file
 );
 
 ### The True Statement
@@ -997,6 +994,82 @@ sub _escape {
 }
 
 
+
+#### Index a data table
+sub index_data_table {
+	
+	# get the arguements
+	my ($data, $increment) = @_;
+	
+	# check data structure
+	unless (defined $data) {
+		carp " No data structure passed!";
+		return;
+	}
+	unless ( verify_data_structure($data) ) {
+		return;
+	}
+	if (exists $data->{'index'}) {
+		warn " data structure is already indexed!\n";
+		return 1;
+	}
+	
+	# check column indices
+	my $chr_index = find_column_index($data, '^chr|seq|refseq');
+	my $start_index = find_column_index($data, '^start');
+	unless (defined $chr_index and $start_index) {
+		carp " unable to find chromosome and start dataset indices!\n";
+		return;
+	}
+	
+	# define increment value
+	unless (defined $increment) {
+		# calculate default value
+		if (exists $data->{$start_index}{'win'}) {
+			# in genome datasets, window size metadata is stored with the 
+			# start position
+			# increment is window size x 20
+			# seems like a reasonable compromise between index size and efficiency
+			$increment = $data->{$start_index}{'win'} * 20;
+		}
+		else {
+			# use some random made-up default value that could be totally 
+			# inappropriate, maybe we should carp a warning instead
+			$increment = 100;
+		}
+	}
+	$data->{'index_increment'} = $increment;
+	
+	# generate index
+	my $table_ref = $data->{'data_table'};
+	my %index;
+	for (my $row = 1; $row <= $data->{'last_row'}; $row++) {
+		
+		# the index will consist of a complex hash structure
+		# the first key will be the chromosome name
+		# the first value will be the second key, and is the integer of 
+		# the start position divided by the increment
+		# the second value will be the row index number 
+		
+		# calculate the index value
+		my $index_value = int( $table_ref->[$row][$start_index] / $increment );
+		
+		# check and insert the index value
+		unless (exists $index{ $table_ref->[$row][$chr_index] }{ $index_value} ) {
+			# insert the current row, which should be the first occurence
+			$index{ $table_ref->[$row][$chr_index] }{ $index_value } = $row;
+		}
+	}
+	
+	# associate the index hash
+	$data->{'index'} = \%index;
+	
+	# success
+	return 1;
+}
+
+
+
 __END__
 
 =head1 NAME
@@ -1005,7 +1078,7 @@ Bio::ToolBox::Extra - Esoteric scripts and functions for BioToolBox
 
 =head1 DESCRIPTION
 
-These are additional gff handling subroutines that used to be part 
+These are additional subroutines that used to be part 
 of L<Bio::ToolBox::file_helper> before being expunged in version 1.26.
 They are required by a number of old, specialized, esoteric, and/or 
 outdate perl scripts that used to be part of the BioToolBox package 
@@ -1025,17 +1098,11 @@ support these old scripts that may still be useful to someone someday.
 
 =head1 USAGE
 
-This module uses as its base <Bio::ToolBox::file_helper> and inherits 
-all its functions. It adds on top of it the functions detailed below.
-
 Call the module at the beginning of your perl script and pass a list of the 
 desired modules to import. None are imported by default.
   
   use Bio::ToolBox::Extra qw(load_data_file convert_genome_data_2_gff_data);
   
-See <Bio::ToolBox::file_helper> for details regarding its API.
-
-The specific usage for the gff export subroutines are detailed below.
 
 =over
 
@@ -1239,7 +1306,67 @@ Example
 		print "wrote file '$success'!";
 	}
 	
+=item index_data_table()
 
+This function creates an index hash for genomic bin features in the 
+data table. Rather than stepping through an entire data table of 
+genomic coordinates looking for a specific chromosome and start 
+feature (or data row), an index may be generated to speed up the 
+search, such that only a tiny portion of the data_table needs to be 
+stepped through to identify the correct feature.
+
+This function generates two additional keys in the data structure 
+described above, C</index> and C</index_increment>. Please refer to 
+those items in L<Bio::ToolBox::data_helper> for their description.
+
+Pass this subroutine one or two arguments. The first is the reference 
+to the data structure. The optional second argument is an integer 
+value to be used as the index_increment value. This value determines 
+the size and efficiency of the index; small values generate a larger 
+but more efficient index, while large values do the opposite. A 
+balance should be struck between memory consumption and speed. The 
+default value is 20 x the feature window size (determined from the 
+metadata). Therefore, finding the specific genomic coordinate 
+feature should take no more than 20 steps from the indexed position. 
+If successful, the subroutine returns a true value.
+
+Example
+
+	my $main_data = load_data_file($filename);
+	index_data_table($main_data) or 
+		die " unable to index data table!\n";
+	...
+	my $chr = 'chr9';
+	my $start = 123456;
+	my $index_value = 
+		int( $start / $main_data->{index_increment} ); 
+	my $starting_row = $main_data->{index}{$chr}{$index_value};
+	for (
+		my $row = $starting_row;
+		$row <= $main_data->{last_row};
+		$row++
+	) {
+		if (
+			$main_data->{data_table}->[$row][0] eq $chr and
+			$main_data->{data_table}->[$row][1] <= $start and
+			$main_data->{data_table}->[$row][2] >= $start
+		) {
+			# do something
+			# you could stop here, but what if you had overlapping
+			# genomic bins for some odd reason?
+		} elsif (
+			$main_data->{data_table}->[$row][0] ne $chr
+		) {
+			# no longer on same chromosome, stop the loop
+			last;
+		} elsif (
+			$main_data->{data_table}->[$row][1] > $start
+		) {
+			# moved beyond the window, stop the loop
+			last;
+		}
+	}
+		
 =back
 
 =head1 AUTHOR

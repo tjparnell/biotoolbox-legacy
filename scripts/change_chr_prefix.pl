@@ -6,12 +6,12 @@ use strict;
 use Getopt::Long;
 use Pod::Usage;
 use File::Temp qw( tempfile );
-use Bio::ToolBox::data_helper qw(find_column_index);
-use Bio::ToolBox::file_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	load_data_file
 	write_data_file
 	open_to_read_fh
 	open_to_write_fh
+	find_column_index
 );
 use Bio::ToolBox::db_helper::config qw($BTB_CONFIG add_program);
 
@@ -22,7 +22,7 @@ eval {
 	$bam_support = 1;
 };
 
-my $VERSION =  1.24;
+my $VERSION = '1.30';
 
 
 print "\n This program will adjust chromosome names of a data file\n";

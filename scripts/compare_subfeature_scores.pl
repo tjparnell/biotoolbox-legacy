@@ -6,15 +6,13 @@ use strict;
 use Getopt::Long;
 use Pod::Usage;
 use Statistics::Lite qw(statshash);
-use Bio::ToolBox::data_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	generate_data_structure
 	find_column_index
-);
-use Bio::ToolBox::file_helper qw(
 	open_data_file 
 	write_data_file 
 );
-my $VERSION = 1.25;
+my $VERSION = '1.30';
 
 print "\n This program will compare scores from multiple subfeatures\n\n";
 

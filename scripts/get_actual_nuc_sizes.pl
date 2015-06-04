@@ -7,7 +7,7 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use Statistics::Lite qw(mean stddevp median min max);
-use Bio::ToolBox::file_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	load_data_file
 	write_data_file
 );
@@ -19,7 +19,7 @@ eval {
 	require Bio::ToolBox::db_helper::bam;
 	Bio::ToolBox::db_helper::bam->import;
 };
-my $VERSION =  1.26;
+my $VERSION =  '1.30';
 
 
 print "\n A script to get exact nucleosome fragment sizes from a Bam file\n\n";

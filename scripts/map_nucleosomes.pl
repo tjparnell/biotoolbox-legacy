@@ -6,7 +6,6 @@ use strict;
 use Pod::Usage;
 use Getopt::Long;
 use Statistics::Lite qw(count min max range sum mean stddevp);
-use Bio::ToolBox::data_helper qw(generate_data_structure);
 use Bio::ToolBox::db_helper qw(
 	open_db_connection
 	verify_or_request_feature_types
@@ -14,14 +13,15 @@ use Bio::ToolBox::db_helper qw(
 	get_region_dataset_hash
 	get_chromo_region_score
 );
-use Bio::ToolBox::file_helper qw(
+use Bio::ToolBox::legacy_helper qw(
+	generate_data_structure
 	write_data_file
 );
 use Bio::ToolBox::Extra qw(
 	convert_and_write_to_gff_file
 );
 #use Data::Dumper;
-my $VERSION = 1.26;
+my $VERSION = '1.30';
 
 print "\n This script will map nucleosomes\n\n";
 

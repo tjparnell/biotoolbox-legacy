@@ -10,7 +10,8 @@ use Statistics::Lite qw(mean median sum);
 use Bio::ToolBox::db_helper qw(
 	get_new_genome_list
 );
-use Bio::ToolBox::file_helper qw(
+use Bio::ToolBox::legacy_helper qw(
+	generate_data_structure
 	load_data_file
 	write_data_file
 	open_to_read_fh
@@ -24,7 +25,7 @@ eval {
 	require Bio::ToolBox::db_helper::bam;
 	Bio::ToolBox::db_helper::bam->import;
 };
-my $VERSION =  1.26;
+my $VERSION = '1.30';
 
 
 print "\n This script will generate genomic binned data\n\n";
@@ -254,14 +255,13 @@ sub prepare_data_structure {
 	if ($new) {
 		print " Generating a new set of genomic bins....\n";
 		# generate new data table
-		$main_data = get_new_genome_list(
+		my $main_data = generate_data_structure(); # technically a Bio::ToolBox::Data obj
+		get_new_genome_list(
+				'data'      => $main_data,
 				'db'        => $dbname, 
 				'win'       => $win, 
 				'step'      => $step,
-		);
-		unless ($main_data) {
-			die "Unable to generate a new data table!\n";
-		}
+		) or die "Unable to generate a new data table!\n";
 		# set program metadata
 		$main_data->{'program'} = $0;
 	} 

@@ -9,13 +9,13 @@ use DirHandle;
 use File::Spec;
 use Archive::Zip qw( :ERROR_CODES );
 use Statistics::Lite qw(mean median sum max);
-use Bio::ToolBox::file_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	open_to_read_fh
 	open_to_write_fh
 );
 use Bio::ToolBox::db_helper::config qw($BTB_CONFIG add_program);
 use Bio::ToolBox::big_helper qw(wig_to_bigwig_conversion);
-my $VERSION = '1.15';
+my $VERSION = '1.30';
 
 print "\n This program will convert bar files to a wig file\n";
 

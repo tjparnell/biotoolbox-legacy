@@ -6,11 +6,9 @@ use strict;
 use Getopt::Long;
 use Statistics::Lite qw(min max mean stddevp);
 use Pod::Usage;
-use Bio::ToolBox::data_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	generate_data_structure
 	find_column_index
-);
-use Bio::ToolBox::file_helper qw(
 	load_data_file
 	write_data_file
 );
@@ -19,7 +17,7 @@ use Bio::ToolBox::Extra qw(
 	convert_and_write_to_gff_file
 );
 use Bio::ToolBox::utility;
-my $VERSION = 1.26;
+my $VERSION = '1.30';
 
 print "\n This script will intersect two lists of nucleosomes\n\n";
 

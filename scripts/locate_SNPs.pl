@@ -6,18 +6,16 @@ use strict;
 use Getopt::Long;
 use Pod::Usage;
 use Bio::Tools::CodonTable;
-use Bio::ToolBox::data_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	generate_data_structure
 	find_column_index
+	open_data_file 
+	write_data_file
 );
 use Bio::ToolBox::db_helper qw(
 	open_db_connection
 );
-use Bio::ToolBox::file_helper qw(
-	open_data_file 
-	write_data_file
-);
-my $VERSION = 1.24;
+my $VERSION = '1.30';
 
 
 

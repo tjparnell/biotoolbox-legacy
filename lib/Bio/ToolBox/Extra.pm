@@ -4,16 +4,14 @@ package Bio::ToolBox::Extra;
 require Exporter;
 use strict;
 use Carp qw(carp cluck croak confess);
-use Bio::ToolBox::data_helper qw(
+use Bio::ToolBox::legacy_helper qw(
+	open_to_write_fh
 	verify_data_structure
 	find_column_index
 );
-use Bio::ToolBox::file_helper qw(
-	open_to_write_fh
-);
 
 
-our $VERSION = 1.26;
+our $VERSION = '1.30';
 
 
 ### Variables

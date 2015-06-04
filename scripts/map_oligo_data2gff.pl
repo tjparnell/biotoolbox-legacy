@@ -5,13 +5,13 @@
 use strict;
 use Getopt::Long;
 use Pod::Usage;
-use Bio::ToolBox::data_helper qw(find_column_index);
-use Bio::ToolBox::file_helper qw(
+use Bio::ToolBox::legacy_helper qw(
+	find_column_index
 	load_data_file
 	open_data_file
 	write_data_file
 );
-my $VERSION =  1.24;
+my $VERSION = '1.30';
 
 
 print "\n This script will map oligo data to the genome and generate a GFF file\n";

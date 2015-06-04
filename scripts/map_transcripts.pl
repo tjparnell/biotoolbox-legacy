@@ -9,23 +9,21 @@ use Pod::Usage;
 use FindBin qw($Bin);
 use Statistics::Lite qw(:all);
 use File::Basename qw(fileparse);
-use Bio::ToolBox::data_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	generate_data_structure
 	find_column_index
+	open_data_file
+	write_data_file
 );
 use Bio::ToolBox::db_helper qw(
 	open_db_connection 
 	verify_or_request_feature_types
 	get_chromo_region_score
 );
-use Bio::ToolBox::file_helper qw(
-	open_data_file
-	write_data_file
-);
 use Bio::ToolBox::Extra qw(
 	convert_and_write_to_gff_file
 );
-my $VERSION = 1.26;
+my $VERSION = '1.26';
 
 print "\n This script will map transcription-enriched windows to gene transcripts\n\n";
 

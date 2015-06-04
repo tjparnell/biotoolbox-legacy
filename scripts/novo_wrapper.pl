@@ -8,7 +8,7 @@ use Getopt::Long;
 use IO::Dir;
 use File::Basename qw(fileparse);
 use Bio::ToolBox::db_helper::config qw($BTB_CONFIG add_program);
-use Bio::ToolBox::file_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	open_to_read_fh
 	open_to_write_fh
 );
@@ -19,7 +19,7 @@ eval {
 	$parallel = 1;
 };
 
-my $VERSION = '1.15';
+my $VERSION = '1.30';
 
 
 print "\n This script is a wrapper for the Novoalign program\n\n";

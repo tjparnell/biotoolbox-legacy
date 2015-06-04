@@ -9,8 +9,8 @@ use File::Copy;
 use File::Spec;
 use File::Path 'make_path';
 use File::Basename qw(fileparse);
-use Bio::ToolBox::data_helper qw(generate_data_structure);
-use Bio::ToolBox::file_helper qw(
+use Bio::ToolBox::legacy_helper qw(
+	generate_data_structure
 	write_data_file
 	open_to_write_fh
 );
@@ -29,7 +29,7 @@ eval {
 	require Bio::ToolBox::db_helper::bam;
 	Bio::ToolBox::db_helper::bam->import;
 };
-my $VERSION = 1.26;
+my $VERSION = '1.30';
 
 print "\n This script will generate a GFF3 file for BigBed, BigWig or Bam files\n";
 

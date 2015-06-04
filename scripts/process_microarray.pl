@@ -7,18 +7,16 @@ use Getopt::Long;
 use Pod::Usage;
 use Statistics::Lite qw(mean median);
 use Statistics::Descriptive;
-use Bio::ToolBox::data_helper qw(
+use Bio::ToolBox::legacy_helper qw(
 	generate_data_structure
 	find_column_index
-);
-use Bio::ToolBox::file_helper qw(
 	open_to_read_fh
 	open_to_write_fh
 	open_data_file
 	write_data_file
 );
 use constant LOG2 => log(2);
-my $VERSION = 1.26;
+my $VERSION = '1.30';
 
 print "\n A script to process microarray files\n\n";
 

@@ -1,5 +1,11 @@
 ######## Bio::ToolBox::Extra revision history #############
 
+v.1.30 (git 150836c)
+	- Update to use minimum Bio::ToolBox version 1.30. All 
+	references to data_helper.pm and file_helper.pm have been 
+	converted to legacy_helper.pm. The legacy_helper exports subs 
+	that use the Bio::ToolBox::Data object behind the scenes.
+
 v.1.26 
 	- Set up all extras scripts as a separate distribution 
 	under a GitHub repository.
@@ -8,4 +14,3 @@ v.1.26
 	to Bio::ToolBox::Extra.
 	- Update scripts to use the new module.
 	
-

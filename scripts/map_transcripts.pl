@@ -23,7 +23,7 @@ use Bio::ToolBox::db_helper qw(
 use Bio::ToolBox::Extra qw(
 	convert_and_write_to_gff_file
 );
-my $VERSION = '1.26';
+my $VERSION = '1.30';
 
 print "\n This script will map transcription-enriched windows to gene transcripts\n\n";
 

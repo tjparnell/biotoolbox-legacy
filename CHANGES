@@ -1,5 +1,10 @@
 ######## Bio::ToolBox::Extra revision history #############
 
+v.1.33
+	- Moved legacy_helper module into this distribution 
+	following its final removal from the main Bio::ToolBox 
+	distribution.
+	
 v.1.30 (git 150836c)
 	- Update to use minimum Bio::ToolBox version 1.30. All 
 	references to data_helper.pm and file_helper.pm have been 

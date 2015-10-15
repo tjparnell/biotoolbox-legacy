@@ -1,6 +1,7 @@
 Build.PL
 CHANGES
 lib/Bio/ToolBox/Extra.pm
+lib/Bio/ToolBox/legacy_helper.pm
 MANIFEST			This list of files
 META.json
 META.yml

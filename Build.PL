@@ -30,7 +30,7 @@ sub get_base_options {
 			'Module::Build'           => 0,
 		},
 		requires          => {
-			'Bio::ToolBox'            => '1.30',
+			'Bio::ToolBox'            => '1.33',
 		},
 		recommends        => {
 		},

@@ -167,17 +167,17 @@ sub load_snp_files {
 			die " could not open file '$file'!\n";
 		
 		# check for VCF header
-		my $vcf_format = 0;
-		foreach ( @{ $metadata->{'other'} } ) {
-			if (/^##fileformat=VCF/) {
-				$vcf_format = 1;
-				last;
-			}
-		}
-		unless ($vcf_format) {
-			warn " '$file' is not a valid VCF format! skipping\n";
-			next;
-		}
+# 		my $vcf_format = 0;
+# 		foreach ( @{ $metadata->{'other'} } ) {
+# 			if (/^##fileformat=VCF/) {
+# 				$vcf_format = 1;
+# 				last;
+# 			}
+# 		}
+# 		unless ($vcf_format) {
+# 			warn " '$file' is not a valid VCF format! skipping\n";
+# 			next;
+# 		}
 		
 		# prep metadata
 		$metadata->{'program'} = undef;

@@ -1,5 +1,5 @@
 package Bio::ToolBox::legacy_helper;
-our $VERSION = '1.33';
+our $VERSION = '1.35';
 
 =head1 NAME
 
@@ -83,8 +83,9 @@ sub open_data_file {
 	my $filename = $Data->check_file($file);
 	$Data->add_file_metadata($filename);
 	my $fh = $Data->open_to_read_fh or return;
-	$Data->parse_headers($fh);
-	return ($Data->{fh}, $Data);
+	$Data->{fh} = $fh;
+	$Data->parse_headers;
+	return ($fh, $Data);
 }
 
 sub load_data_file {

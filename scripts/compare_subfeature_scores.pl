@@ -12,7 +12,7 @@ use Bio::ToolBox::legacy_helper qw(
 	open_data_file 
 	write_data_file 
 );
-my $VERSION = '1.30';
+my $VERSION = '1.36';
 
 print "\n This program will compare scores from multiple subfeatures\n\n";
 
@@ -44,8 +44,8 @@ my (
 GetOptions( 
 	'in=s'      => \$infile, # the input data file
 	'out=s'     => \$outfile, # name of output file 
-	'gene=i'    => \$gene_i, # gene column index
-	'transcript=i' => \$transcript_i, # transcript column index
+	'gene|parent=i' => \$gene_i, # gene column index
+	'transcript|subfeature=i' => \$transcript_i, # transcript column index
 	'score=i'   => \$score_i, # score column index
 	'gz!'       => \$gz, # compress output
 	'help'      => \$help, # request help
@@ -332,11 +332,15 @@ Specify the output filename.
 
 =item --parent <index>
 
+=item --gene <index>
+
 Optionally specify the index column for the parent or gene name. If 
 not specified, the program will interactively present a list of columns 
 to choose from.
 
 =item --subfeature <index>
+
+=item --transcript <index>
 
 Optionally specify the index column for the subfeature or transcript 
 name. If not specified, the program will interactively present a list 

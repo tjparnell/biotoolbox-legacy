@@ -11,7 +11,7 @@ use Bio::ToolBox::legacy_helper qw(
 );
 
 
-our $VERSION = '1.33';
+our $VERSION = '1.36';
 
 
 ### Variables

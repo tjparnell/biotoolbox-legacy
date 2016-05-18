@@ -1,5 +1,5 @@
 package Bio::ToolBox::legacy_helper;
-our $VERSION = '1.35';
+our $VERSION = '1.36';
 
 =head1 NAME
 
@@ -10,9 +10,7 @@ Bio::ToolBox::legacy_helper - exported methods to support legacy API
 These are legacy methods that used to be provided by Bio::ToolBox::data_helper 
 and Bio::ToolBox::file_helper, but have now been superseded by the object 
 oriented API of L<Bio::ToolBox::Data>. All new scripts should use the 
-L<Bio::ToolBox::Data> API and NOT these methods. This module will go away 
-in the near future. (Actually, it will just be moved to the <Bio::ToolBox::Extra> 
-distribution, where most legacy programs live out any remaining usefulness.)
+L<Bio::ToolBox::Data> API and NOT these methods. 
 
 =cut
 
@@ -85,7 +83,7 @@ sub open_data_file {
 	my $fh = $Data->open_to_read_fh or return;
 	$Data->{fh} = $fh;
 	$Data->parse_headers;
-	return ($fh, $Data);
+	return ($Data->{fh}, $Data);
 }
 
 sub load_data_file {

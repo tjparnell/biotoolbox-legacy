@@ -16,7 +16,7 @@ use Bio::ToolBox::legacy_helper qw(
 	write_data_file
 );
 use constant LOG2 => log(2);
-my $VERSION = '1.30';
+my $VERSION = '1.36';
 
 print "\n A script to process microarray files\n\n";
 
@@ -164,9 +164,9 @@ unless (%evalues) {
 # check that all probes loaded have equal counts of values
 check_microarray_value_counts();
 
-print "next unique id for a probe would be $unique_id\n";
-printf " there are %s values for condition $k\n", scalar @(keys %evalues});
-printf " there are %s replicates for condition $k\n", scalar @{ $cvalues{1}};
+# print "next unique id for a probe would be $unique_id\n";
+# printf " there are %s values for condition $k\n", scalar @(keys %evalues});
+# printf " there are %s replicates for condition $k\n", scalar @{ $cvalues{1}};
 
 
 
@@ -248,7 +248,7 @@ if (%cvalues) {
 ### Write output
 $outfile =~ s/\.txt$//; # strip extension if present
 # write main output
-my $written_file = write_tim_data_file(
+my $written_file = write_data_file(
 	# we will write a tim data file
 	'data'     => $output,
 	'filename' => $outfile,
@@ -699,10 +699,9 @@ sub load_nimblegen_file {
 	my ($file, $channel) = @_;
 	
 	# open the file
-	print " Reading file $file....\n";
-	my ($fh, $metadata) = open_tim_data_file($file) or 
+	print " Reading file $file for condition $channel....\n";
+	my ($fh, $metadata) = open_data_file($file) or 
 		warn " unable to open file!\n";
-	return unless $fh;
 	
 	# determine column indices
 	my $featurenum_i = find_column_index($metadata, '^MATCH_INDEX') or 
@@ -721,6 +720,7 @@ sub load_nimblegen_file {
 		my @data   = split /\t/, $line;
 		my $probe  = $data[$probename_i];
 		my $number = $data[$featurenum_i];
+		die "no probe name or feature number identified!\n" unless ($probe and $number);
 		
 		# Need to identify the lookup unique_id for this probe
 		# I don't think we have duplicate probes here on Nimblegen slides
@@ -1737,6 +1737,14 @@ The program will write out a tab-delimited data file consisting of
 normalized data values for experiment and control, and the experiment/control
 ratio for each probeID. It will also write out a separate report text file.
 
+=head1 DYES
+
+Because I always forget
+
+Cy5 = Red = 635 nm excitation
+
+Cy3 = Green = 532 nm excitation
+
 =head1 RECIPE FILE
 
 To facilitate complex arrangements of data files, hybridizations, channel 
@@ -1757,9 +1765,9 @@ Blank lines and comment lines (prefix #) are ignored.
 
 An example is below
  
- # two-channel file, red is experiment, green is control
+ # two-channel file, red (Cy5) is experiment, green (Cy3) is control
  path/to/file.txt	ec
- # two-channel file, red is experiment, green is not used
+ # two-channel file, red (Cy5) is experiment, green (Cy3) is not used
  path/to/file.txt	en
  
 =head1 AUTHOR

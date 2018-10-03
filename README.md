@@ -35,6 +35,7 @@ on the BioToolBox page.
 # INSTALLATION
 
 Installation is simple with the standard Perl incantation.
+
     perl ./Build.PL
     ./Build installdeps     # if necessary
     ./Build

@@ -1,11 +1,10 @@
 Build.PL
 CHANGES
-lib/Bio/ToolBox/Extra.pm
-lib/Bio/ToolBox/legacy_helper.pm
+lib/Bio/ToolBox/Legacy.pm
 MANIFEST			This list of files
 META.json
 META.yml
-README
+README.md
 scripts/bam2gff_bed.pl
 scripts/bar2wig.pl
 scripts/big_file2gff3.pl

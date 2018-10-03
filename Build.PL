@@ -30,7 +30,7 @@ sub get_base_options {
 			'Module::Build'           => 0,
 		},
 		requires          => {
-			'Bio::ToolBox'            => '1.33',
+			'Bio::ToolBox'            => '1.62',
 		},
 		recommends        => {
 		},
@@ -42,19 +42,16 @@ sub get_base_options {
 			'scripts/change_chr_prefix.pl',
 			'scripts/compare_subfeature_scores.pl',
 			'scripts/convert_yeast_genome_version.pl',
-			'scripts/get_actual_nuc_sizes.pl',
+			'scripts/find_enriched_regions.pl',
 			'scripts/get_bam_seq_stats.pl',
-			'scripts/intersect_nucs.pl',
 			'scripts/intersect_SNPs.pl',
 			'scripts/locate_SNPs.pl',
-			'scripts/map_nucleosomes.pl',
 			'scripts/map_oligo_data2gff.pl',
 			'scripts/map_transcripts.pl',
 			'scripts/novo_wrapper.pl',
 			'scripts/process_microarray.pl',
 			'scripts/split_bam_by_isize.pl',
 			'scripts/ucsc_cytoband2gff3.pl',
-			'scripts/verify_nucleosome_mapping.pl',
 		],
 	);
 	return \%options;

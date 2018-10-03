@@ -14,16 +14,16 @@ use Bio::ToolBox::legacy_helper qw(
 	find_column_index
 	open_data_file
 	write_data_file
+	get_chromo_region_score
 );
 use Bio::ToolBox::db_helper qw(
 	open_db_connection 
 	verify_or_request_feature_types
-	get_chromo_region_score
 );
 use Bio::ToolBox::Extra qw(
 	convert_and_write_to_gff_file
 );
-my $VERSION = '1.30';
+my $VERSION = '1.62';
 
 print "\n This script will map transcription-enriched windows to gene transcripts\n\n";
 

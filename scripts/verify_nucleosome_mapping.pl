@@ -10,14 +10,14 @@ use Bio::ToolBox::legacy_helper qw(
 	find_column_index
 	load_data_file
 	write_data_file
+	get_region_dataset_hash
 );
 use Bio::ToolBox::db_helper qw(
 	open_db_connection
 	verify_or_request_feature_types
-	get_region_dataset_hash
 );
 use Bio::ToolBox::utility;
-my $VERSION =  '1.30';
+my $VERSION =  '1.62';
 
 print "\n This program will verify the mapping of nucleosomes\n\n";
 

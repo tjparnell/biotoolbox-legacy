@@ -4,14 +4,16 @@ package Bio::ToolBox::Extra;
 require Exporter;
 use strict;
 use Carp qw(carp cluck croak confess);
+use Bio::ToolBox::Data;
 use Bio::ToolBox::legacy_helper qw(
 	open_to_write_fh
 	verify_data_structure
 	find_column_index
 );
+our $CLASS = 'Bio::ToolBox::Data';
 
 
-our $VERSION = '1.36';
+our $VERSION = '1.62';
 
 
 ### Variables
@@ -22,6 +24,7 @@ our @EXPORT = qw(
 our @EXPORT_OK = qw(
 	convert_genome_data_2_gff_data 
 	convert_and_write_to_gff_file
+	index_data_table
 );
 
 ### The True Statement
@@ -997,24 +1000,29 @@ sub _escape {
 sub index_data_table {
 	
 	# get the arguements
-	my ($data, $increment) = @_;
+	my ($Data, $increment) = @_;
 	
 	# check data structure
-	unless (defined $data) {
+	unless (defined $Data) {
 		carp " No data structure passed!";
 		return;
 	}
-	unless ( verify_data_structure($data) ) {
+	unless (ref($Data) eq $CLASS) {
+		# try an impromptu blessing and hope this works!
+		bless($Data, $CLASS);
+	}
+	
+	unless ( $Data->verify ) {
 		return;
 	}
-	if (exists $data->{'index'}) {
+	if (exists $Data->{'index'}) {
 		warn " data structure is already indexed!\n";
 		return 1;
 	}
 	
 	# check column indices
-	my $chr_index = find_column_index($data, '^chr|seq|refseq');
-	my $start_index = find_column_index($data, '^start');
+	my $chr_index = $Data->find_column('^chr|seq|refseq');
+	my $start_index = $Data->find_column('^start');
 	unless (defined $chr_index and $start_index) {
 		carp " unable to find chromosome and start dataset indices!\n";
 		return;
@@ -1023,12 +1031,13 @@ sub index_data_table {
 	# define increment value
 	unless (defined $increment) {
 		# calculate default value
-		if (exists $data->{$start_index}{'win'}) {
+		$increment = $Data->metadata($start_index, 'win');
+		if (defined $increment) {
 			# in genome datasets, window size metadata is stored with the 
 			# start position
 			# increment is window size x 20
 			# seems like a reasonable compromise between index size and efficiency
-			$increment = $data->{$start_index}{'win'} * 20;
+			$increment *= 20;
 		}
 		else {
 			# use some random made-up default value that could be totally 
@@ -1036,12 +1045,11 @@ sub index_data_table {
 			$increment = 100;
 		}
 	}
-	$data->{'index_increment'} = $increment;
+	$Data->{'index_increment'} = $increment;
 	
 	# generate index
-	my $table_ref = $data->{'data_table'};
 	my %index;
-	for (my $row = 1; $row <= $data->{'last_row'}; $row++) {
+	for (my $row = 1; $row <= $Data->last_row; $row++) {
 		
 		# the index will consist of a complex hash structure
 		# the first key will be the chromosome name
@@ -1050,17 +1058,19 @@ sub index_data_table {
 		# the second value will be the row index number 
 		
 		# calculate the index value
-		my $index_value = int( $table_ref->[$row][$start_index] / $increment );
+		my $start = $Data->value($row, $start_index);
+		my $chr   = $Data->value($row, $chr_index);
+		my $index_value = int( $start / $increment );
 		
 		# check and insert the index value
-		unless (exists $index{ $table_ref->[$row][$chr_index] }{ $index_value} ) {
+		unless (exists $index{ $chr }{ $index_value} ) {
 			# insert the current row, which should be the first occurence
-			$index{ $table_ref->[$row][$chr_index] }{ $index_value } = $row;
+			$index{$chr}{ $index_value } = $row;
 		}
 	}
 	
 	# associate the index hash
-	$data->{'index'} = \%index;
+	$Data->{'index'} = \%index;
 	
 	# success
 	return 1;

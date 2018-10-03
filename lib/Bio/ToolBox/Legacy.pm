@@ -1,9 +1,9 @@
-package Bio::ToolBox::legacy_helper;
-our $VERSION = '1.60';
+package Bio::ToolBox::Legacy;
+our $VERSION = '1.62';
 
 =head1 NAME
 
-Bio::ToolBox::legacy_helper - exported methods to support legacy API
+Bio::ToolBox::Legacy - Legacy functions for outdated Bio::ToolBox API calls
 
 =head1 DESCRIPTION
 

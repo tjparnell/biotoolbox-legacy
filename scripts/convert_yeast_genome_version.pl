@@ -5,7 +5,7 @@
 use strict;
 use Getopt::Long;
 use Pod::Usage;
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	open_data_file
 	write_data_file
 	open_to_write_fh

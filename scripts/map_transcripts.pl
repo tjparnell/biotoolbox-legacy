@@ -9,19 +9,17 @@ use Pod::Usage;
 use FindBin qw($Bin);
 use Statistics::Lite qw(:all);
 use File::Basename qw(fileparse);
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	generate_data_structure
 	find_column_index
 	open_data_file
 	write_data_file
 	get_chromo_region_score
+	convert_and_write_to_gff_file
 );
 use Bio::ToolBox::db_helper qw(
 	open_db_connection 
 	verify_or_request_feature_types
-);
-use Bio::ToolBox::Extra qw(
-	convert_and_write_to_gff_file
 );
 my $VERSION = '1.62';
 

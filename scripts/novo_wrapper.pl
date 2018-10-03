@@ -8,7 +8,7 @@ use Getopt::Long;
 use IO::Dir;
 use File::Basename qw(fileparse);
 use Bio::ToolBox::db_helper::config qw($BTB_CONFIG add_program);
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	open_to_read_fh
 	open_to_write_fh
 );

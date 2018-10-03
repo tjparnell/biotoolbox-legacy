@@ -6,7 +6,7 @@ use strict;
 use Getopt::Long;
 use Pod::Usage;
 use File::Basename qw(fileparse);
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	generate_data_structure
 	open_data_file 
 	write_data_file 

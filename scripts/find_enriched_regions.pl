@@ -13,7 +13,7 @@ use Bio::ToolBox::db_helper qw(
 	verify_or_request_feature_types
 	get_chromosome_list
 );
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	get_region_dataset_hash
 	get_chromo_region_score
 );

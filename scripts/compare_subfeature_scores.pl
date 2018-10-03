@@ -6,7 +6,7 @@ use strict;
 use Getopt::Long;
 use Pod::Usage;
 use Statistics::Lite qw(statshash);
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	generate_data_structure
 	find_column_index
 	open_data_file 

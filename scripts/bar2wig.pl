@@ -9,7 +9,7 @@ use DirHandle;
 use File::Spec;
 use Archive::Zip qw( :ERROR_CODES );
 use Statistics::Lite qw(mean median sum max);
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	open_to_read_fh
 	open_to_write_fh
 );

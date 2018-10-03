@@ -10,13 +10,11 @@ use Statistics::Lite qw(mean median sum);
 use Bio::ToolBox::db_helper qw(
 	get_new_genome_list
 );
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	generate_data_structure
 	load_data_file
 	write_data_file
 	open_to_read_fh
-);
-use Bio::ToolBox::Extra qw(
 	convert_and_write_to_gff_file
 	index_data_table
 );

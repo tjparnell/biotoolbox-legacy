@@ -6,7 +6,7 @@ use strict;
 use Getopt::Long;
 use Pod::Usage;
 use File::Temp qw( tempfile );
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	load_data_file
 	write_data_file
 	open_to_read_fh

@@ -9,12 +9,12 @@ use File::Copy;
 use File::Spec;
 use File::Path 'make_path';
 use File::Basename qw(fileparse);
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	generate_data_structure
 	write_data_file
 	open_to_write_fh
+	convert_genome_data_2_gff_data
 );
-use Bio::ToolBox::Extra qw(convert_genome_data_2_gff_data);
 eval {
 	# check for bigWig support
 	require Bio::ToolBox::db_helper::bigwig;

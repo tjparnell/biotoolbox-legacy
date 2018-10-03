@@ -7,7 +7,7 @@ use Getopt::Long;
 use Pod::Usage;
 use Statistics::Lite qw(mean median);
 use Statistics::Descriptive;
-use Bio::ToolBox::legacy_helper qw(
+use Bio::ToolBox::Legacy qw(
 	generate_data_structure
 	find_column_index
 	open_to_read_fh

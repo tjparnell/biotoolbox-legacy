@@ -283,7 +283,7 @@ then generating a composite or average gene occupancy.
 The output file is a BioToolBox data tab-delimited file as described above with three
 columns: The Name of the window, the Midpoint of the window (calculated as the
 mean of the start and stop points for the window), and the mean value. The 
-table is essentially rotated 90º from the original table; the averages of each
+table is essentially rotated 90 degrees from the original table; the averages of each
 column dataset becomes rows of data.
 
 Pass the subroutine an anonymous hash of arguments. These include:

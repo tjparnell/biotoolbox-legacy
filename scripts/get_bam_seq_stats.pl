@@ -5,13 +5,8 @@
 use strict;
 use Getopt::Long;
 use Pod::Usage;
-my $BAM_OK = 0;
-eval { 
-	require Bio::ToolBox::db_helper::bam;
-	Bio::ToolBox::db_helper::bam->import;
-	$BAM_OK = 1;
-};
-my $VERSION = '1.16';
+use Bio::ToolBox 1.66 ;
+my $VERSION = '1.67';
 
 print "\n A script to report the alignment sequence nucleotide frequencies\n\n";
 
@@ -77,14 +72,12 @@ unless ($outfile) {
 	$outfile =~ s/\.sorted//;
 	$outfile .= '.seq_stats.txt';
 }
-unless ($BAM_OK) {
-	die "Unable to load Bam file support! Is Bio::DB::Sam installed?\n"; 
-}
 
 
 ### Run the program
 # open the bam object
-my $sam = open_bam_db($infile) or die " unable to open input bam file '$infile'!\n";
+my $sam = Bio::ToolBox->open_database($infile) or 
+	die " unable to open input bam file '$infile'! Is a Bam adapter installed?\n";
 	
 my $seq_counter = get_bam_seq_stats::counter->new($sam);
 
@@ -104,6 +97,7 @@ exit 0;
 ### Internal packages
 package get_bam_seq_stats::counter;
 use strict;
+use Bio::ToolBox::db_helper 1.66 qw(low_level_bam_fetch);
 use IO::File;
 1;
 
@@ -130,14 +124,8 @@ sub count_stats {
 	# walk through each chromosome
 	for my $tid (0 .. $sam->n_targets - 1) {
 		print "  counting ", $sam->target_name($tid), "....\n";
-		$sam->bam_index->fetch(
-			$sam->bam, 
-			$tid, 
-			0, 
-			$sam->target_len($tid), 
-			\&callback,
-			$self,
-		);
+		low_level_bam_fetch($sam, $tid, 0, $sam->target_len($tid), 
+							\&callback, $self);
 	}
 }
 
@@ -218,7 +206,7 @@ sub print_stats {
 	
 	# header
 	# the bam file path is an undocumented component of the sam object
-	$fh->print("# File ", $self->{sam}->{'bam_path'}, "\n");
+	$fh->print("# File $infile\n");
 	$fh->print("# ", $self->{'align'}, " total aligned reads\n");
 	$fh->print("# ", $self->{'no_align'}, " total non-aligned reads\n\n");
 	

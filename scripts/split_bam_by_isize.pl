@@ -6,18 +6,15 @@ use strict;
 use Getopt::Long;
 use Pod::Usage;
 use Bio::ToolBox::utility;
-my $bam_ok;
-eval {
-	# check for Bam support
-	require Bio::DB::Sam;
-	use Bio::ToolBox::db_helper::bam;
-	$bam_ok = 1;
-};
-my $VERSION = '1.20';
+use Bio::ToolBox::db_helper 1.50 qw(
+	open_db_connection
+	low_level_bam_fetch
+	$BAM_ADAPTER
+);
+my $VERSION = '1.50';
 
 # constant for memory usage while sorting
 # this increases default from 500MB to 1GB
-use constant SORT_MEM => 1_000_000_000;
 
 print "\n A script to split a paired-end bam file by insert sizes\n\n";
 
@@ -75,9 +72,6 @@ if ($print_version) {
 
 
 ### Check for required values and set defaults
-unless ($bam_ok) {
-	die "Bio::DB::Sam must be installed to run this script.\n";
-}
 # input file
 unless ($infile) {
 	if (@ARGV) {
@@ -150,23 +144,37 @@ my %buffer;
 print " Opening bam files....\n";
 
 # input file
-my $in_sam = open_bam_db($infile) 
-	or die " unable to open input bam file '$infile'!\n";
+my $in_sam = open_db_connection($infile) 
+	or die " unable to open input bam file '$infile'!\n Is Bio::DB::Sam or Bio::DB::HTS installed?\n";
 print "   input file '$infile'\n";
 
 # input header
-my $header = $in_sam->header();
-unless ($header) {
-	die "no header in input bam file!!!\n";
-}
+# my $header = $in_sam->header();
+# unless ($header) {
+# 	die "no header in input bam file!!!\n";
+# }
 
-# fix the header with the sort flag, in anticipation of the output
-# files being properly sorted
-{
-	my $text = $header->text;
-	$text =~ s/SO:unsorted/SO:Coordinate/;
-	$header->text($text);
+# read header and set adapter specific alignment writer
+my ($header, $writer);
+if ($BAM_ADAPTER eq 'sam') {
+	$header = $in_sam->bam->header;
+	$writer = \&write_sam_alignment;
 }
+elsif ($BAM_ADAPTER eq 'hts') {
+	$header = $in_sam->hts_file->header_read;
+	$writer = \&write_hts_alignment;
+}
+else {
+	die "unrecognized bam adapter $BAM_ADAPTER!";
+}
+my $htext = $header->text();
+$htext .= sprintf("\@PG\tID:split_bam_by_isize\tVN:%s\tCL:%s", $VERSION, $0);
+$htext .= sprintf(" --in %s %s", $infile, join(" ", 
+	map { sprintf("--size %d-%d", $_->[0], $_->[1]) } @sizes) );
+$htext .= " --at" if $AT_ends;
+$htext .= " --quick" if $quick;
+$header->text($htext);
+
 
 # output files
 foreach (@sizes) {
@@ -176,8 +184,9 @@ foreach (@sizes) {
 	my $bam_file = $outfile . '.' . $_->[0] . '_' . $_->[1] . '.bam';
 	
 	# open bam file
-	my $bam = write_new_bam_file($bam_file) 
-		or die "unable to open output bam file '$outfile' for writing!\n";
+	my $bam = Bio::ToolBox::db_helper::write_new_bam_file($bam_file) or 
+		die "unable to open output bam file $bam_file! $!";
+		# using an unexported subroutine imported as necessary depending on bam availability
 	print "   output file '$bam_file'\n";
 	
 	# write headers
@@ -204,21 +213,23 @@ for my $tid (0 .. $in_sam->n_targets - 1) {
 	print "  splitting alignments on ", $in_sam->target_name($tid), "...\n";
 	
 	if ($quick) {
-		$in_sam->bam_index->fetch(
-			$in_sam->bam, 
+		low_level_bam_fetch(
+			$in_sam, 
 			$tid, 
 			0, 
 			$in_sam->target_len($tid), 
-			\&quick_callback
+			\&quick_callback,
+			1 # fake data
 		);
 	}
 	else {
-		$in_sam->bam_index->fetch(
-			$in_sam->bam, 
+		low_level_bam_fetch(
+			$in_sam, 
 			$tid, 
 			0, 
 			$in_sam->target_len($tid), 
-			\&paired_callback
+			\&paired_callback,
+			1 # fake data
 		);
 	}
 	
@@ -235,33 +246,11 @@ for my $tid (0 .. $in_sam->n_targets - 1) {
 
 ### Finish up 
 
-# resort and index the bam files
-foreach my $size (@sizes) {
-	
-	# undefine the bam object to close
-	pop @{$size}; 
-	
-	# sort
-	my $new_file = $size->[3];
-	$new_file =~ s/\.bam/.sorted/;
-	print " re-sorting $size->[3]...\n";
-	Bio::DB::Bam->sort_core(0, $size->[3], $new_file, SORT_MEM);
-	
-	# make new indices
-	$new_file .= '.bam'; # sorting would've automatically added the extension
-	if (-s $new_file) {
-		# remove old and rename new output file
-		unlink $size->[3]; 
-		rename($new_file, $size->[3]);
-		
-		# be nice and re-index it for them
-		Bio::DB::Bam->index_build($size->[3]);
-	}
-	else {
-		warn "  re-sorting and indexing failed! leaving as is\n";
-	}
+# close the bam files
+undef $header;
+foreach (@sizes) {
+	undef $_->[4];
 }
-
 
 # Print summaries
 print "\n There were ", format_with_commas($read_count)," total mapped reads\n";
@@ -303,9 +292,9 @@ foreach (@sizes) {
 	print " " . format_with_commas($_->[2]) . " (" . percent_pc($_->[2]) . 
 		") pairs were written to file '$_->[3]'\n";
 }
-print "\n";
 
-
+print " \nNote: output files may need to be sorted and indexed!\n";
+exit 0;
 
 
 
@@ -486,12 +475,26 @@ sub write_alignments {
 			$length >= $size->[0] and
 			$length <= $size->[1]
 		) {
-			$size->[4]->write1($a1);
-			$size->[4]->write1($a2) if defined $a2;
+			&$writer($size->[4], $a1);
+			&$writer($size->[4], $a2) if defined $a2;
+# 			$size->[4]->write1($a1);
+# 			$size->[4]->write1($a2) if defined $a2;
 			$size->[2] += 1 unless ($a1->reversed); # count the left ones only
 		}
 	}
 }
+
+
+sub write_sam_alignment {
+	# wrapper for writing Bio::DB::Sam alignments
+	return $_[0]->write1($_[1]);
+}
+
+sub write_hts_alignment {
+	# wrapper for writing Bio::DB::HTS alignments
+	return $_[0]->write1($header, $_[1]);
+}
+
 
 
 
@@ -607,10 +610,8 @@ only that it increases the liklihood of being an A/T dinucleotide
 (absolute checking would require looking up the original sequence).
 
 The input and output files are BAM files as described by the Samtools 
-project (http://samtools.sourceforge.net). 
-
-The input file should be sorted and indexed prior to sizing. The output 
-file(s) will be automatically re-sorted and re-indexed for you.
+project (http://samtools.sourceforge.net). The input file should be 
+sorted and indexed prior to sizing. 
 
 A number of statistics about the read pairs are also written to standard 
 output for your information, including the number of proper alignments 

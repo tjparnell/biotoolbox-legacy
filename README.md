@@ -27,10 +27,11 @@ command-line environment. They have been developed and tested on Mac
 OS X and linux; Microsoft Windows compatability is not tested nor 
 guaranteed.
 
-These scripts require the installation of [Bio::ToolBox](https://github.com/tjparnell/biotoolbox), 
+These scripts require the installation of 
+[Bio::ToolBox](https://github.com/tjparnell/biotoolbox), 
 and all the requirements therein. There are advanced installation instructions 
-on the BioToolBox page.
-
+on the BioToolBox page. **NOTE**: This requires Bio::ToolBox version 1.69; it
+is incompatible with the latest versions.
 
 # INSTALLATION
 
